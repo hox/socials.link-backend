@@ -1,6 +1,12 @@
 const Sequelize = require("../../main.js").Sequelize;
 
 module.exports = {
+  accountId: {
+    type: Sequelize.INTEGER,
+    allowNull: false,
+    primaryKey: true,
+    autoIncrement: true
+  },
   username: {
     type: Sequelize.STRING,
     allowNull: false
@@ -27,10 +33,6 @@ module.exports = {
     allowNull: false
   },
   tags: {
-    type: Sequelize.JSON,
-    allowNull: true
-  },
-  integrations: {
     type: Sequelize.JSON,
     allowNull: true
   }

@@ -2,6 +2,8 @@ require("dotenv").config();
 const Sequelize = require("sequelize");
 const body_parser = require("body-parser");
 const express = require("express");
+const bcrypt = require("bcrypt");
+const cors = require("cors");
 const fs = require("fs");
 
 // * * * * * //
@@ -9,6 +11,15 @@ const fs = require("fs");
 const api = express();
 api.disable("x-powered-by");
 api.use(body_parser.json());
+api.use(cors());
+api.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+});
 api.listen(process.env.API_PORT, () => {
   console.log(`[API] Online at :${process.env.API_PORT}`);
 });
@@ -53,12 +64,8 @@ function refreshTables() {
   fs.readdir("src/Models", (err, modelfiles) => {
     if (err) throw err;
     modelfiles.forEach(model => {
-      models[model.split(".")[0]] = db.define(
-        model.split(".")[0],
-        require(`./src/Models/${model}`)
-      );
-      models[model.split(".")[0]].sync({ force: true });
-      console.log(model.split(".")[0]);
+      db.define(model.split(".")[0], require(`./src/Models/${model}`));
+      db.models[model.split(".")[0]].sync({ force: true });
     });
   });
 }
