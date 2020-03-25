@@ -11,11 +11,16 @@ const fs = require("fs");
 const api = express();
 api.disable("x-powered-by");
 api.use(body_parser.json());
-api.use(cors());
-api.use(function(req, res, next) {
+api.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "*");
-  next();
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  if (req.method === 'OPTIONS') {
+    res.header('Access-Control-Allow-Methods', 'POST, GET');
+    return res.status(200).json({});
+  }
 });
 api.listen(process.env.API_PORT, () => {
   console.log(`[API] Online at :${process.env.API_PORT}`);
