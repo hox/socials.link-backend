@@ -3,7 +3,6 @@ const Sequelize = require("sequelize");
 const body_parser = require("body-parser");
 const express = require("express");
 const bcrypt = require("bcrypt");
-const cors = require("cors");
 const fs = require("fs");
 
 // * * * * * //
@@ -11,16 +10,11 @@ const fs = require("fs");
 const api = express();
 api.disable("x-powered-by");
 api.use(body_parser.json());
-api.use((req, res, next) => {
+api.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  if (req.method === 'OPTIONS') {
-    res.header('Access-Control-Allow-Methods', 'POST, GET');
-    return res.status(200).json({});
-  }
+  res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  next();
 });
 api.listen(process.env.API_PORT, () => {
   console.log(`[API] Online at :${process.env.API_PORT}`);
@@ -53,7 +47,7 @@ fs.readdir("src/Routes", (err, types) => {
         let routeEx = require(`./src/Routes/${type}/${route}`);
         api[type](`/${route.split(".")[0]}`, (req, res) => {
           routeEx(req, res);
-          console.log("GET /" + route.split(".")[0]);
+          console.log(`${req.ip} | GET /${route.split(".")[0]}`);
         });
       });
     });
